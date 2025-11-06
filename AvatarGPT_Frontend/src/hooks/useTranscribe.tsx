@@ -7,7 +7,7 @@ import {
 } from "react";
 
 // const backendUrl = "http://localhost:3000";
-const backendUrl = "https://des646-drkzen.onrender.com/";
+const backendUrl = "https://des646-drkzen.onrender.com";
 // const backendUrl = "https://avatargpt-backend.onrender.com";
 
 
