@@ -1,4 +1,4 @@
-# 🤖 Emotion-Aware 3D Assistant (AvatarGPT)
+# Emotion-Aware 3D Assistant (AvatarGPT)
 
 An advanced AI-powered 3D avatar assistant that understands and responds to human emotions through both text and voice interactions. Built with cutting-edge emotion detection, natural language processing, and real-time 3D avatar animations.
 
@@ -9,36 +9,36 @@ An advanced AI-powered 3D avatar assistant that understands and responds to huma
 
 ## ✨ Features
 
-### 🎭 Advanced Emotion Detection
+###  Advanced Emotion Detection
 - **10 Emotion Categories**: Joy, Sadness, Anger, Fear, Surprise, Disgust, Anticipation, Trust, Calm, Neutral
 - **Multi-Layer Analysis**: Word-level, sentence-level, and contextual analysis
 - **Intensity Scoring**: High/Medium/Low intensity detection with confidence scoring
 - **Mixed Emotions**: Handles complex emotional states (e.g., "excited but nervous")
 - **Negation Handling**: Correctly interprets "I'm not happy" vs "I'm happy"
 
-### 🎨 Interactive 3D Avatar
+###  Interactive 3D Avatar
 - **Real-time Animations**: Facial expressions and gestures based on detected emotions
 - **Multiple Avatar Models**: Female, Male, Shiba (dog), and Stylized variants
 - **Camera Controls**: Zoom, pan, and rotate for immersive interaction
 - **Lipsync Technology**: Precise mouth movements synchronized with speech
 
-### 🎤 Dual Input Modes
+###  Dual Input Modes
 - **Text Chat**: Type messages with instant emotion analysis
 - **Voice Commands**: Speak naturally with real-time speech-to-text and emotion detection
 - **Seamless Switching**: Toggle between text and voice modes instantly
 
-### 🎯 Smart AI Responses
+###  Smart AI Responses
 - **Emotion-Aware GPT**: Responses adapt to detected emotional state
 - **Contextual Understanding**: Considers conversation history and emotional context
 - **Personality Consistency**: Maintains character personality while adapting to emotions
 
-### 🎪 Visual Feedback System
+###  Visual Feedback System
 - **Emotion Display Panel**: Real-time emotion detection visualization
 - **Processing Animation**: Step-by-step analysis display
 - **Confidence Metrics**: Detailed emotion scores and confidence levels
 - **Theme Support**: Light/Dark mode with automatic system detection
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -55,7 +55,7 @@ An advanced AI-powered 3D avatar assistant that understands and responds to huma
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Frontend
 - **React 18** - Modern UI framework with hooks
@@ -83,7 +83,7 @@ An advanced AI-powered 3D avatar assistant that understands and responds to huma
 - **Wawa Lipsync** - Lip synchronization technology
 - **Web Audio API** - Audio processing and playback
 
-## 🚀 Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 - **Node.js** 18+ and npm
@@ -139,7 +139,7 @@ yarn dev
 
 Visit `http://localhost:5173` to interact with the assistant!
 
-## ⚙️ Configuration
+##  Configuration
 
 ### API Keys Required
 Create a `.env` file in the `AvatarGPT_Backend` directory:
@@ -160,7 +160,7 @@ NODE_ENV=development
 1. **IO Intelligence**: Sign up at [intelligence.io](https://intelligence.io)
 2. **Sarvam AI**: Register at [sarvam.ai](https://sarvam.ai)
 
-## 📖 Usage
+##  Usage
 
 ### Basic Interaction
 1. **Text Mode**: Type messages in the input field
@@ -178,7 +178,7 @@ NODE_ENV=development
 - **Negation**: Test with "I'm not happy about this" vs "I'm happy about this"
 - **Intensity**: Use words like "very", "so", "extremely" for stronger detection
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 ### Text Chat
 ```http
@@ -221,7 +221,7 @@ audio: [audio_file]
 
 **Response:** Same format as text chat with transcribed emotion analysis.
 
-## 🎨 Customization
+##  Customization
 
 ### Avatar Models
 Add new avatar models in `/public/models/` and update the UI component:
@@ -259,7 +259,7 @@ Modify themes in `EmotionDisplay.tsx` and `UI.tsx`:
 --secondary: #818cf8;
 ```
 
-## 🧪 Testing
+##  Testing
 
 ### Emotion Detection Testing
 ```bash
@@ -279,7 +279,7 @@ curl -X POST http://localhost:3000/chat \
 curl http://localhost:3000/
 ```
 
-## 🤝 Contributing
+##  Contributing
 
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
@@ -294,11 +294,11 @@ curl http://localhost:3000/
 - Ensure responsive design works on mobile
 - Update documentation for new features
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **IO Intelligence** for GPT model hosting
 - **Sarvam AI** for exceptional TTS/STT services
