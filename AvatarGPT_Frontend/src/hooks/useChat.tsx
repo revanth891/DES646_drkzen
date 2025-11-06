@@ -6,8 +6,8 @@ import {
   ReactNode,
 } from "react";
 
-const backendUrl = "http://localhost:3000";
-// const backendUrl = "https://avatargpt-backend.onrender.com";
+// const backendUrl = "http://localhost:3000"; use this if run locally
+const backendUrl = "https://des646-drkzen.onrender.com/";
 // const backendUrl = "https://vulture-assuring-mammoth.ngrok-free.app";
 
 
