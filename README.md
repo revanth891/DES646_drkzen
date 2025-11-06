@@ -93,8 +93,8 @@ An advanced AI-powered 3D avatar assistant that understands and responds to huma
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/emotion-aware-3d-assistant.git
-cd emotion-aware-3d-assistant
+git clone https://github.com/revanth891/DES646_drkzen.git
+cd DES646_drkzen
 ```
 
 ### 2. Backend Setup
@@ -105,11 +105,14 @@ cd AvatarGPT_Backend
 pip install -r requirements.txt
 
 # Install Node.js dependencies
-npm install
+yarn
 
 # Set up environment variables
-cp .env.example .env
+cp .env
 # Edit .env with your API keys (see Configuration section)
+
+# Start development server
+yarn dev
 ```
 
 ### 3. Frontend Setup
@@ -117,21 +120,21 @@ cp .env.example .env
 cd ../AvatarGPT_Frontend
 
 # Install dependencies
-npm install
+yarn
 
 # Start development server
-npm run dev
+yarn dev
 ```
 
 ### 4. Start the Application
 ```bash
 # Terminal 1: Start Backend
 cd AvatarGPT_Backend
-npm start
+yarn dev
 
 # Terminal 2: Start Frontend (if not already running)
 cd AvatarGPT_Frontend
-npm run dev
+yarn dev
 ```
 
 Visit `http://localhost:5173` to interact with the assistant!
@@ -302,15 +305,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Spline** for 3D avatar capabilities
 - **Three.js** community for 3D web graphics
 - **NLTK** and **TextBlob** for NLP foundations
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-username/emotion-aware-3d-assistant/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/emotion-aware-3d-assistant/discussions)
-- **Email**: your-email@example.com
-
----
-
-**Made with ❤️ and cutting-edge AI technology**
 
 *Transforming human-AI interaction through emotional intelligence and immersive 3D experiences.*
