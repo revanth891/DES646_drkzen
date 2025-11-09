@@ -160,7 +160,7 @@ function App() {
 
   // 🔄 Keep Alive Ping for Render
   useEffect(() => {
-    const URL = "https://avatargpt-backend.onrender.com/";
+    const URL = "https://des646-drkzen.onrender.com/";
     const INTERVAL = 1000 * 60 * 4; // every 4 minutes
 
     async function ping() {
