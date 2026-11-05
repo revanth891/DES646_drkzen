@@ -5,6 +5,7 @@ import multer from "multer";
 import fetch, { Blob, FormData } from "node-fetch";
 import OpenAI from "openai";
 import { spawn } from "child_process";
+import { detectEmotionWithWorker, startEmotionWorker } from "./emotionWorker.js";
 
 dotenv.config();
 
@@ -26,16 +27,19 @@ const ioClient = new OpenAI({
 });
 
 // ---------- Generate Chat Messages ----------
-const generateMessages = async (userInput) => {
+const generateMessages = async (userInput, knownEmotion = null) => {
   try {
-    // Detect emotion from user input
-    let emotionData;
-    try {
-      emotionData = await detectEmotion(userInput);
-      console.log('Detected emotion:', emotionData);
-    } catch (emotionError) {
-      console.error('Emotion detection failed:', emotionError);
-      emotionData = { emotion: 'neutral', confidence: 0 };
+    // Reuse the emotion the route already detected; detect here only when
+    // called without one (detecting twice doubled the wait for every reply).
+    let emotionData = knownEmotion;
+    if (!emotionData) {
+      try {
+        emotionData = await detectEmotion(userInput);
+        console.log('Detected emotion:', emotionData);
+      } catch (emotionError) {
+        console.error('Emotion detection failed:', emotionError);
+        emotionData = { emotion: 'neutral', confidence: 0 };
+      }
     }
 
     // Map emotions to appropriate responses
@@ -195,7 +199,18 @@ const sarvamSpeechToText = async (audioBuffer, originalName) => {
 };
 
 // ---------- Emotion Detection ----------
-const detectEmotion = (text) => {
+// One long-lived Python worker answers every request (see emotionWorker.js).
+// If it cannot be used, fall back to the old one-process-per-message path.
+const detectEmotion = async (text) => {
+  try {
+    return await detectEmotionWithWorker(text);
+  } catch (workerError) {
+    console.error("Emotion worker unavailable, using a one-off process:", workerError.message);
+    return detectEmotionOnce(text);
+  }
+};
+
+const detectEmotionOnce = (text) => {
   return new Promise((resolve, reject) => {
     const pythonProcess = spawn('python', ['emotion_detector.py', text], {
       cwd: process.cwd()
@@ -236,8 +251,13 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
+// Opt-in stage timings for benchmarking: run with BENCH_TIMINGS=1 and every
+// /chat reply carries a `timings` object (milliseconds).
+const BENCH = process.env.BENCH_TIMINGS === "1";
+
 // Text chat
 app.post("/chat", async (req, res) => {
+  const tStart = performance.now();
   const userMessage = req.body.message;
 
   // Detect emotion first to return it
@@ -248,8 +268,10 @@ app.post("/chat", async (req, res) => {
     console.error('Emotion detection failed:', emotionError);
     emotionData = { emotion: 'neutral', confidence: 0 };
   }
+  const tEmotion = performance.now();
 
-  let messages = await generateMessages(userMessage);
+  let messages = await generateMessages(userMessage, emotionData);
+  const tLlm = performance.now();
 
   await Promise.all(
     messages.map(async (msg) => {
@@ -257,8 +279,19 @@ app.post("/chat", async (req, res) => {
       msg.lipsync = { mouthCues: [] };
     })
   );
+  const tEnd = performance.now();
 
-  res.send({ messages, emotion: emotionData });
+  const body = { messages, emotion: emotionData };
+  if (BENCH) {
+    body.timings = {
+      emotion_ms: tEmotion - tStart,
+      emotion_calls: 1,
+      llm_ms: tLlm - tEmotion,
+      tts_ms: tEnd - tLlm,
+      total_ms: tEnd - tStart,
+    };
+  }
+  res.send(body);
 });
 
 // Voice chat (audio upload → Sarvam STT → chat → TTS)
@@ -278,7 +311,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
       emotionData = { emotion: 'neutral', confidence: 0 };
     }
 
-    let messages = await generateMessages(transcript);
+    let messages = await generateMessages(transcript, emotionData);
 
     await Promise.all(
       messages.map(async (msg) => {
@@ -296,6 +329,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
+  startEmotionWorker(); // load NLTK/TextBlob now, not on the first message
 });
 
 
