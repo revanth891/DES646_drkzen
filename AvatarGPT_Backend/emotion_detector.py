@@ -9,15 +9,21 @@ from nltk.corpus import stopwords
 from collections import Counter
 import math
 
-# Download required NLTK data
-try:
-    nltk.data.find('vader_lexicon')
-    nltk.data.find('punkt')
-    nltk.data.find('stopwords')
-except LookupError:
-    nltk.download('vader_lexicon')
-    nltk.download('punkt')
-    nltk.download('stopwords')
+# Make sure the NLTK data is present. Each resource is looked up by its full
+# path, so the download only happens when something is really missing. (The
+# old check looked up bare names like 'punkt', which never match, so it
+# re-ran nltk.download -- a network round trip -- on every message.)
+_NLTK_RESOURCES = [
+    ("sentiment/vader_lexicon.zip", "vader_lexicon"),
+    ("tokenizers/punkt", "punkt"),
+    ("tokenizers/punkt_tab", "punkt_tab"),  # word_tokenize needs this on NLTK 3.9+
+    ("corpora/stopwords", "stopwords"),
+]
+for _path, _package in _NLTK_RESOURCES:
+    try:
+        nltk.data.find(_path)
+    except LookupError:
+        nltk.download(_package, quiet=True)
 
 class AdvancedEmotionDetector:
     def __init__(self):
@@ -300,12 +306,13 @@ class AdvancedEmotionDetector:
 
         return min(1.0, confidence)
 
-def detect_emotion(text):
+def detect_emotion(text, detector=None):
     """
     Advanced emotion detection using multiple NLP techniques
-    Returns detailed emotion analysis with primary emotion and confidence
+    Returns detailed emotion analysis with primary emotion and confidence.
+    Pass a detector to reuse it (the --serve mode keeps one for its lifetime).
     """
-    detector = AdvancedEmotionDetector()
+    detector = detector or AdvancedEmotionDetector()
 
     # Calculate emotion scores
     emotion_scores, vader_scores, polarity, subjectivity = detector.calculate_emotion_scores(text)
@@ -358,7 +365,43 @@ def detect_emotion(text):
         }
     }
 
+def serve():
+    """Answer one JSON request per line on stdin with one JSON reply per line on stdout.
+
+    Used by emotionWorker.js so Python, NLTK and TextBlob load once instead of
+    once per message.
+        request: {"id": 1, "text": "..."}
+        reply:   {"id": 1, "result": {...}}  or  {"id": 1, "error": "..."}
+    """
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+    protocol = sys.stdout
+    sys.stdout = sys.stderr  # stray library prints must not corrupt the protocol
+    detector = AdvancedEmotionDetector()
+    protocol.write(json.dumps({"ready": True}) + "\n")
+    protocol.flush()
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        request_id = None
+        try:
+            request = json.loads(line)
+            request_id = request.get("id")
+            reply = {"id": request_id, "result": detect_emotion(str(request.get("text", "")), detector)}
+        except Exception as e:
+            reply = {"id": request_id, "error": str(e)}
+        protocol.write(json.dumps(reply) + "\n")
+        protocol.flush()
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 2 and sys.argv[1] == "--serve":
+        serve()
+        sys.exit(0)
     if len(sys.argv) < 2:
         print(json.dumps({"error": "No text provided"}))
         sys.exit(1)
